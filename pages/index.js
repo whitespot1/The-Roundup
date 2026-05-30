@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function Home() {
   const [articles, setArticles] = useState([])
   const [status, setStatus] = useState('loading')
   const [active, setActive] = useState('all')
   const [activeCountry, setActiveCountry] = useState('all')
+  const [countryOpen, setCountryOpen] = useState(false)
+  const [countrySearch, setCountrySearch] = useState('')
   const [dark, setDark] = useState(true)
+  const countryRef = useRef(null)
   const cats = ['all','Politics','Technology','Science','Business','Health','Sustainability','Supply Chain','Automotive','Social Media']
 
   const t = dark ? {
@@ -23,6 +26,17 @@ export default function Home() {
   }
 
   useEffect(() => { loadNews() }, [])
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (countryRef.current && !countryRef.current.contains(e.target)) {
+        setCountryOpen(false)
+        setCountrySearch('')
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   useEffect(() => {
     const bg = dark ? '#111' : '#f5f0e8'
@@ -45,6 +59,7 @@ export default function Home() {
   }
 
   const countries = ['all', ...new Set(articles.map(a => a.country).filter(Boolean))]
+  const filteredCountries = countries.filter(c => c === 'all' || c.toLowerCase().includes(countrySearch.toLowerCase()))
   const shown = articles
     .filter(a => active === 'all' || a.category === active)
     .filter(a => activeCountry === 'all' || a.country === activeCountry)
@@ -70,14 +85,30 @@ export default function Home() {
           ))}
         </div>
         {countries.length > 1 && (
-          <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',borderTop:`1px solid ${t.border}`,paddingTop:'0.4rem',marginBottom:'0.6rem'}}>
-            <span style={{color:t.muted,fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',padding:'0.35rem 0.5rem',alignSelf:'center'}}>Country:</span>
-            {countries.map(c => (
-              <button key={c} onClick={() => setActiveCountry(c)}
-                style={{background:activeCountry===c?t.btn:'transparent',color:activeCountry===c?t.btnText:t.muted,border:'none',padding:'0.3rem 0.7rem',fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',cursor:'pointer'}}>
-                {c === 'all' ? 'All' : c}
+          <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'0.5rem',borderTop:`1px solid ${t.border}`,paddingTop:'0.4rem',marginBottom:'0.6rem'}}>
+            <span style={{color:t.muted,fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase'}}>Country:</span>
+            <div ref={countryRef} style={{position:'relative'}}>
+              <button onClick={() => setCountryOpen(!countryOpen)}
+                style={{background:activeCountry!=='all'?t.btn:'transparent',color:activeCountry!=='all'?t.btnText:t.muted,border:`1px solid ${t.border}`,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',cursor:'pointer',display:'flex',alignItems:'center',gap:'0.4rem'}}>
+                {activeCountry === 'all' ? 'All Countries' : activeCountry} <span style={{fontSize:'0.5rem'}}>▾</span>
               </button>
-            ))}
+              {countryOpen && (
+                <div style={{position:'absolute',top:'calc(100% + 2px)',left:0,background:t.card,border:`1px solid ${t.border}`,zIndex:200,minWidth:'220px',boxShadow:'0 4px 12px rgba(0,0,0,0.4)'}}>
+                  <input autoFocus value={countrySearch} onChange={e => setCountrySearch(e.target.value)}
+                    placeholder="Search country..."
+                    style={{width:'100%',background:t.bg,color:t.text,border:'none',borderBottom:`1px solid ${t.border}`,padding:'0.45rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',outline:'none',boxSizing:'border-box'}} />
+                  <div style={{maxHeight:'200px',overflowY:'auto'}}>
+                    {filteredCountries.map(c => (
+                      <div key={c} onClick={() => { setActiveCountry(c); setCountryOpen(false); setCountrySearch('') }}
+                        style={{padding:'0.4rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer',background:activeCountry===c?t.btn:'transparent',color:activeCountry===c?t.btnText:t.text}}>
+                        {c === 'all' ? 'All Countries' : c}
+                      </div>
+                    ))}
+                    {filteredCountries.length === 0 && <div style={{padding:'0.4rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',color:t.muted}}>No results</div>}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <button onClick={loadNews} disabled={status==='loading'}

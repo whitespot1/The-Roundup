@@ -4,7 +4,7 @@ export default function Home() {
   const [articles, setArticles] = useState([])
   const [status, setStatus] = useState('loading')
   const [active, setActive] = useState('all')
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(true)
   const cats = ['all','World','Politics','Technology','Science','Business','Health','Climate']
 
   const t = dark ? {
@@ -50,7 +50,7 @@ export default function Home() {
             {dark ? '☀ Light' : '☾ Dark'}
           </button>
         </div>
-        <h1 style={{fontFamily:'Georgia,serif',fontSize:'2.5rem',fontWeight:900,margin:'0 0 0.2rem',color:t.text}}>The Digest</h1>
+        <h1 style={{fontFamily:'Georgia,serif',fontSize:'2.5rem',fontWeight:900,margin:'0 0 0.2rem',color:t.text}}>The Roundup</h1>
         <p style={{fontSize:'0.7rem',letterSpacing:'0.2em',color:t.muted,textTransform:'uppercase',margin:'0 0 0.8rem'}}>Trusted Sources · Concise Summaries</p>
         <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',borderTop:`1px solid ${t.border}`,paddingTop:'0.6rem',marginBottom:'0.6rem'}}>
           {cats.map(c => (

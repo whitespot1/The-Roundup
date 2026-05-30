@@ -10,11 +10,15 @@ export default function Home() {
   const t = dark ? {
     bg: '#111', header: '#111', card: '#1a1a1a',
     text: '#e8e4dc', muted: '#666', border: '#2a2a2a',
-    badge: '#e8e4dc', badgeText: '#111', accent: '#e05a4e', summary: '#999'
+    badge: '#e8e4dc', badgeText: '#111',
+    btn: '#2a2a2a', btnText: '#e8e4dc',
+    accent: '#e05a4e', summary: '#999'
   } : {
     bg: '#f5f0e8', header: '#f5f0e8', card: '#faf7f2',
     text: '#0f0e0c', muted: '#7a7368', border: '#d4cfc4',
-    badge: '#0f0e0c', badgeText: '#f5f0e8', accent: '#c8392b', summary: '#3a3830'
+    badge: '#0f0e0c', badgeText: '#f5f0e8',
+    btn: '#0f0e0c', btnText: '#f5f0e8',
+    accent: '#c8392b', summary: '#3a3830'
   }
 
   useEffect(() => { loadNews() }, [])
@@ -55,13 +59,13 @@ export default function Home() {
         <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',borderTop:`1px solid ${t.border}`,paddingTop:'0.6rem',marginBottom:'0.6rem'}}>
           {cats.map(c => (
             <button key={c} onClick={() => setActive(c)}
-              style={{background:active===c?t.badge:'transparent',color:active===c?t.badgeText:t.muted,border:'none',padding:'0.35rem 0.9rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer'}}>
+              style={{background:active===c?t.btn:'transparent',color:active===c?t.btnText:t.muted,border:'none',padding:'0.35rem 0.9rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer'}}>
               {c}
             </button>
           ))}
         </div>
         <button onClick={loadNews} disabled={status==='loading'}
-          style={{background:t.badge,color:t.badgeText,border:'none',padding:'0.4rem 1.4rem',fontSize:'0.72rem',textTransform:'uppercase',letterSpacing:'0.08em',cursor:'pointer'}}>
+          style={{background:t.btn,color:t.btnText,border:'none',padding:'0.4rem 1.4rem',fontSize:'0.72rem',textTransform:'uppercase',letterSpacing:'0.08em',cursor:'pointer'}}>
           {status==='loading' ? 'Loading...' : '↻ Refresh'}
         </button>
       </div>

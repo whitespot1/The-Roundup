@@ -16,10 +16,10 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 16000,
+        max_tokens: 4000,
         messages: [{
           role: 'user',
-          content: `Today is ${today}. Generate 10 diverse news stories as a JSON array. Each item must have: headline, summary (2-3 sentences max 60 words), source (one of: Reuters/AP News/BBC/The Guardian/NPR/Financial Times/Nature/WHO/NASA), category (one of: World/Politics/Technology/Science/Business/Health/Climate), time (like "2 hours ago"). Return ONLY the raw JSON array, no markdown, no backticks, no explanation.`
+          content: `Today is ${today}. Generate 10 diverse news stories as a JSON array. Each item must have: headline, summary (2-3 sentences max 60 words), source (one of: Reuters/AP News/BBC/The Guardian/NPR/Financial Times/Nature/WHO/NASA/X), category (one of: Politics/Technology/Science/Business/Health/Sustainability/Supply Chain/Automotive/Social Media), country (primary country the story is about, full name e.g. "United States"), time (like "2 hours ago"). For Social Media category use source "X" and cover trending topics on X (Twitter). Return ONLY the raw JSON array, no markdown, no backticks, no explanation.`
         }]
       })
     })

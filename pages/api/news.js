@@ -33,8 +33,8 @@ Return ONLY a valid JSON array with NO preamble, NO markdown, NO backticks. Each
     const data = await response.json();
     const text = data.content.map(b => b.text || '').join('');
     const clean = text.replace(/```json|```/gi, '').trim();
-    const articles = JSON.parse(clean);
-    res.status(200).json(articles);
+    res.status(500).json({ error: err.message, hasKey: !!process.env.ANTHROPIC_API_KEY });
+   res.status(200).json(articles);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

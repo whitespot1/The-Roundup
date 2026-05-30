@@ -23,20 +23,22 @@ export default function Home() {
   const shown = active === 'all' ? articles : articles.filter(a => a.category === active)
 
   const t = dark ? {
-    bg: '#0f0f0f', header: '#141414', card: '#1a1a1a', cardHover: '#222',
-    text: '#e8e4dc', muted: '#888', border: '#2a2a2a', badge: '#e8e4dc',
-    badgeText: '#0f0f0f', accent: '#e05a4e', summary: '#aaa'
+    bg: '#111', header: '#111', card: '#1a1a1a',
+    text: '#e8e4dc', muted: '#666', border: '#2a2a2a',
+    badge: '#e8e4dc', badgeText: '#111', accent: '#e05a4e', summary: '#999'
   } : {
-    bg: '#f5f0e8', header: '#f5f0e8', card: '#faf7f2', cardHover: '#fff',
-    text: '#0f0e0c', muted: '#7a7368', border: '#d4cfc4', badge: '#0f0e0c',
-    badgeText: '#f5f0e8', accent: '#c8392b', summary: '#3a3830'
+    bg: '#f5f0e8', header: '#f5f0e8', card: '#faf7f2',
+    text: '#0f0e0c', muted: '#7a7368', border: '#d4cfc4',
+    badge: '#0f0e0c', badgeText: '#f5f0e8', accent: '#c8392b', summary: '#3a3830'
   }
 
   return (
-    <div style={{fontFamily:'Georgia,serif',background:t.bg,minHeight:'100vh',color:t.text,transition:'background 0.3s, color 0.3s'}}>
-      <div style={{textAlign:'center',padding:'1.5rem 1rem',borderBottom:`3px double ${t.border}`,position:'sticky',top:0,background:t.header,zIndex:99,transition:'background 0.3s'}}>
+    <div style={{fontFamily:'Georgia,serif',background:t.bg,minHeight:'100vh',color:t.text,transition:'all 0.3s'}}>
+
+      {/* HEADER */}
+      <div style={{textAlign:'center',padding:'1.5rem 1rem',borderBottom:`3px double ${t.border}`,position:'sticky',top:0,background:t.bg,zIndex:99,transition:'all 0.3s'}}>
         <div style={{display:'flex',justifyContent:'flex-end',marginBottom:'0.5rem'}}>
-          <button onClick={() => setDark(!dark)} style={{background:'none',border:`1px solid ${t.border}`,color:t.text,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer',letterSpacing:'0.08em',borderRadius:'2px'}}>
+          <button onClick={() => setDark(!dark)} style={{background:'none',border:`1px solid ${t.border}`,color:t.text,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer'}}>
             {dark ? '☀ Light' : '☾ Dark'}
           </button>
         </div>
@@ -45,7 +47,7 @@ export default function Home() {
         <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',borderTop:`1px solid ${t.border}`,paddingTop:'0.6rem',marginBottom:'0.6rem'}}>
           {cats.map(c => (
             <button key={c} onClick={() => setActive(c)}
-              style={{background:active===c?t.badge:'transparent',color:active===c?t.badgeText:t.muted,border:'none',padding:'0.35rem 0.9rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer',transition:'all 0.15s'}}>
+              style={{background:active===c?t.badge:'transparent',color:active===c?t.badgeText:t.muted,border:'none',padding:'0.35rem 0.9rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer'}}>
               {c}
             </button>
           ))}
@@ -56,23 +58,27 @@ export default function Home() {
         </button>
       </div>
 
-      <div style={{maxWidth:'1100px',margin:'2rem auto',padding:'0 1rem'}}>
-        {status==='error' && <p style={{textAlign:'center',color:'red',fontFamily:'monospace',padding:'2rem'}}>Failed to load. Tap Refresh.</p>}
-        {status==='loading' && <p style={{textAlign:'center',color:t.muted,fontFamily:'monospace',padding:'2rem'}}>Fetching today's briefing...</p>}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'1px',background:t.border,border:`1px solid ${t.border}`}}>
-          {shown.map((a, i) => (
-            <div key={i} style={{background:t.card,padding:'1.4rem',display:'flex',flexDirection:'column',gap:'0.6rem',transition:'background 0.2s'}}>
-              <div style={{display:'flex',gap:'0.5rem',alignItems:'center'}}>
-                <span style={{background:t.badge,color:t.badgeText,fontFamily:'monospace',fontSize:'0.6rem',padding:'0.15rem 0.4rem',textTransform:'uppercase'}}>{a.source}</span>
-                <span style={{color:t.accent,fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase'}}>{a.category}</span>
+      {/* CONTENT */}
+      <div style={{background:t.bg,minHeight:'100vh',padding:'2rem 1rem',transition:'all 0.3s'}}>
+        <div style={{maxWidth:'1100px',margin:'0 auto'}}>
+          {status==='error' && <p style={{textAlign:'center',color:'red',fontFamily:'monospace',padding:'2rem'}}>Failed to load. Tap Refresh.</p>}
+          {status==='loading' && <p style={{textAlign:'center',color:t.muted,fontFamily:'monospace',padding:'2rem'}}>Fetching today's briefing...</p>}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'1px',background:t.border,border:`1px solid ${t.border}`}}>
+            {shown.map((a, i) => (
+              <div key={i} style={{background:t.card,padding:'1.4rem',display:'flex',flexDirection:'column',gap:'0.6rem'}}>
+                <div style={{display:'flex',gap:'0.5rem',alignItems:'center'}}>
+                  <span style={{background:t.badge,color:t.badgeText,fontFamily:'monospace',fontSize:'0.6rem',padding:'0.15rem 0.4rem',textTransform:'uppercase'}}>{a.source}</span>
+                  <span style={{color:t.accent,fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase'}}>{a.category}</span>
+                </div>
+                <h2 style={{fontFamily:'Georgia,serif',fontSize:'1.05rem',fontWeight:700,lineHeight:1.35,margin:0,color:t.text}}>{a.headline}</h2>
+                <p style={{fontSize:'0.85rem',lineHeight:1.65,color:t.summary,margin:0}}>{a.summary}</p>
+                <p style={{fontFamily:'monospace',fontSize:'0.6rem',color:t.muted,margin:0,paddingTop:'0.5rem',borderTop:`1px solid ${t.border}`}}>{a.time}</p>
               </div>
-              <h2 style={{fontFamily:'Georgia,serif',fontSize:'1.05rem',fontWeight:700,lineHeight:1.35,margin:0,color:t.text}}>{a.headline}</h2>
-              <p style={{fontSize:'0.85rem',lineHeight:1.65,color:t.summary,margin:0}}>{a.summary}</p>
-              <p style={{fontFamily:'monospace',fontSize:'0.6rem',color:t.muted,margin:0,paddingTop:'0.5rem',borderTop:`1px solid ${t.border}`}}>{a.time}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
+
     </div>
   )
 }

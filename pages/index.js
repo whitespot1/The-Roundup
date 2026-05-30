@@ -7,11 +7,24 @@ export default function Home() {
   const [dark, setDark] = useState(false)
   const cats = ['all','World','Politics','Technology','Science','Business','Health','Climate']
 
+  const t = dark ? {
+    bg: '#111', header: '#111', card: '#1a1a1a',
+    text: '#e8e4dc', muted: '#666', border: '#2a2a2a',
+    badge: '#e8e4dc', badgeText: '#111', accent: '#e05a4e', summary: '#999'
+  } : {
+    bg: '#f5f0e8', header: '#f5f0e8', card: '#faf7f2',
+    text: '#0f0e0c', muted: '#7a7368', border: '#d4cfc4',
+    badge: '#0f0e0c', badgeText: '#f5f0e8', accent: '#c8392b', summary: '#3a3830'
+  }
+
   useEffect(() => { loadNews() }, [])
 
   useEffect(() => {
+    const bg = dark ? '#111' : '#f5f0e8'
+    document.documentElement.style.background = bg
     document.body.style.margin = '0'
-    document.body.style.background = t.bg
+    document.body.style.padding = '0'
+    document.body.style.background = bg
   }, [dark])
 
   async function loadNews() {
@@ -26,16 +39,6 @@ export default function Home() {
   }
 
   const shown = active === 'all' ? articles : articles.filter(a => a.category === active)
-
-  const t = dark ? {
-    bg: '#111', header: '#111', card: '#1a1a1a',
-    text: '#e8e4dc', muted: '#666', border: '#2a2a2a',
-    badge: '#e8e4dc', badgeText: '#111', accent: '#e05a4e', summary: '#999'
-  } : {
-    bg: '#f5f0e8', header: '#f5f0e8', card: '#faf7f2',
-    text: '#0f0e0c', muted: '#7a7368', border: '#d4cfc4',
-    badge: '#0f0e0c', badgeText: '#f5f0e8', accent: '#c8392b', summary: '#3a3830'
-  }
 
   return (
     <div style={{fontFamily:'Georgia,serif',background:t.bg,minHeight:'100vh',color:t.text,transition:'all 0.3s'}}>

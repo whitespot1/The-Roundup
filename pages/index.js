@@ -58,11 +58,11 @@ export default function Home() {
     } catch(e) { setStatus('error') }
   }
 
-  const countries = ['all', ...new Set(articles.map(a => a.country).filter(Boolean))]
+  const countries = ['all', ...[...new Set(articles.map(a => a.country).filter(Boolean))].sort()]
   const filteredCountries = countries.filter(c => c === 'all' || c.toLowerCase().includes(countrySearch.toLowerCase()))
   const shown = articles
     .filter(a => active === 'all' || a.category === active)
-    .filter(a => activeCountry === 'all' || a.country === activeCountry)
+    .filter(a => activeCountry === 'all' || a.country === activeCountry || a.category === 'Social Media')
 
   return (
     <div style={{fontFamily:'Georgia,serif',background:t.bg,minHeight:'100vh',color:t.text,transition:'all 0.3s'}}>

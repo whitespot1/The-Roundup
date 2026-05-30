@@ -9,7 +9,7 @@ export default function Home() {
   const [countrySearch, setCountrySearch] = useState('')
   const [dark, setDark] = useState(true)
   const countryRef = useRef(null)
-  const cats = ['all','Politics','Technology','Science','Business','Health','Sustainability','Supply Chain','Automotive','Social Media']
+  const cats = ['all','Politics','Technology','Science','Business','Health','Sustainability','Supply Chain','Automotive','Social Media','Sport']
 
   const t = dark ? {
     bg: '#111', header: '#111', card: '#1a1a1a',
@@ -58,7 +58,7 @@ export default function Home() {
     } catch(e) { setStatus('error') }
   }
 
-  const countries = ['all', ...[...new Set(articles.map(a => a.country).filter(Boolean))].sort()]
+  const countries = ['all', ...[...new Set(articles.map(a => a.country).filter(c => c && c !== 'Multiple'))].sort()]
   const filteredCountries = countries.filter(c => c === 'all' || c.toLowerCase().includes(countrySearch.toLowerCase()))
   const shown = articles
     .filter(a => active === 'all' || a.category === active)

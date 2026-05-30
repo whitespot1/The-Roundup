@@ -25,16 +25,26 @@ Return ONLY a valid JSON array with NO preamble, NO markdown, NO backticks. Each
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
 
     const data = await response.json();
-    const text = data.content.map(b => b.text || '').join('');
+
+    if (!response.ok) {
+      return res.status(500).json({ error: 'Anthropic error', details: data });
+    }
+
+    if (!data.content || !data.content[0]) {
+      return res.status(500).json({ error: 'Empty response', data });
+    }
+
+    const text = data.content[0].text;
     const clean = text.replace(/```json|```/gi, '').trim();
-    res.status(500).json({ error: err.message, hasKey: !!process.env.ANTHROPIC_API_KEY });
-   res.status(200).json(articles);
+    const articles = JSON.parse(clean);
+    res.status(200).json(articles);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -59,8 +59,8 @@ export default function Home() {
       </div>
 
       {/* CONTENT */}
-      <div style={{background:t.bg,minHeight:'100vh',padding:'2rem 1rem',transition:'all 0.3s'}}>
-        <div style={{maxWidth:'1100px',margin:'0 auto'}}>
+      <div style={{background:t.bg,minHeight:'100vh',padding:'2rem 0',transition:'all 0.3s'}}>
+        <div style={{maxWidth:'1100px',margin:'0 auto',padding:'0 1rem'}}>
           {status==='error' && <p style={{textAlign:'center',color:'red',fontFamily:'monospace',padding:'2rem'}}>Failed to load. Tap Refresh.</p>}
           {status==='loading' && <p style={{textAlign:'center',color:t.muted,fontFamily:'monospace',padding:'2rem'}}>Fetching today's briefing...</p>}
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'1px',background:t.border,border:`1px solid ${t.border}`}}>

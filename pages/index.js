@@ -9,6 +9,11 @@ export default function Home() {
 
   useEffect(() => { loadNews() }, [])
 
+  useEffect(() => {
+    document.body.style.margin = '0'
+    document.body.style.background = t.bg
+  }, [dark])
+
   async function loadNews() {
     setStatus('loading')
     setArticles([])

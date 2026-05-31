@@ -73,6 +73,8 @@ export default async function handler(req, res) {
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) return res.status(500).json({ error: 'No API key' })
 
+  const isArabic = req.query.lang === 'ar'
+
   try {
     const results = await Promise.allSettled(RSS_FEEDS.map(f => fetchFeed(f)))
     const buckets = results
@@ -103,16 +105,21 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 8000,
+        max_tokens: 10000,
         messages: [{
           role: 'user',
-          content: `For each news item below, write a clean 2-3 sentence summary (max 60 words, factual and concise), assign a category, and identify the primary country. Return ONLY a JSON array: [{"idx":0,"summary":"...","category":"...","country":"Full Country Name"},...]
+          content: `For each news item below, ${isArabic
+            ? 'translate the headline to Arabic and write a clean 2-3 sentence summary IN ARABIC (max 60 words),'
+            : 'write a clean 2-3 sentence summary (max 60 words),'
+          } assign a category, and identify the primary country.
 
-Categories: Politics, Technology, Science, Business, Health, Sustainability, Supply Chain, Automotive, Social Media, Sport
+Return ONLY a JSON array: [{"idx":0,${isArabic ? '"headline":"العنوان بالعربية",' : ''}"summary":"...","category":"...","country":"Full English Country Name"},...]
+
+Categories (always return these exact English values): Politics, Technology, Science, Business, Health, Sustainability, Supply Chain, Automotive, Social Media, Sport
 - Sustainability: green energy, climate, conservation, environmental policy
 - Supply Chain: logistics, trade routes, procurement, reshoring, supply security
-- Technology: software, AI, electronics, cybersecurity (NOT supply chain stories)
-- Social Media: news about social media platforms or viral social trends
+- Technology: software, AI, electronics, cybersecurity (NOT supply chain)
+- Social Media: news about social platforms or viral trends
 
 News items:
 ${raw.map((a, i) => `[${i}] TITLE: ${a.title}\nCONTEXT: ${a.summary}`).join('\n\n')}`
@@ -126,8 +133,8 @@ ${raw.map((a, i) => `[${i}] TITLE: ${a.title}\nCONTEXT: ${a.summary}`).join('\n\
 
     const articles = cats
       .filter(c => raw[c.idx])
-      .map(({ idx, summary, category, country }) => ({
-        headline: raw[idx].title,
+      .map(({ idx, headline, summary, category, country }) => ({
+        headline: headline || raw[idx].title,
         summary,
         source: raw[idx].source,
         time: raw[idx].time,

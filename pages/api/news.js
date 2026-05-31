@@ -1,12 +1,23 @@
 const RSS_FEEDS = [
+  // Global news
   { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC' },
   { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC' },
-  { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC' },
-  { url: 'https://feeds.bbci.co.uk/sport/rss.xml', source: 'BBC' },
   { url: 'https://www.theguardian.com/world/rss', source: 'The Guardian' },
+  { url: 'https://www.theguardian.com/technology/rss', source: 'The Guardian' },
   { url: 'https://feeds.npr.org/1001/rss.xml', source: 'NPR' },
   { url: 'https://www.aljazeera.com/xml/rss/all.xml', source: 'Al Jazeera' },
+  { url: 'https://rss.dw.com/xml/rss-en-all', source: 'Deutsche Welle' },
+  { url: 'https://www.france24.com/en/rss', source: 'France 24' },
+  { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', source: 'CNBC' },
+  { url: 'https://feeds.reuters.com/reuters/topNews', source: 'Reuters' },
+  { url: 'https://feeds.reuters.com/reuters/businessNews', source: 'Reuters' },
+  // Middle East / Saudi focus
   { url: 'https://www.arabnews.com/rss.xml', source: 'Arab News' },
+  { url: 'https://www.spa.gov.sa/rss/rss.php?lang=en', source: 'Saudi Press Agency' },
+  // Governmental / IGO
+  { url: 'https://news.un.org/feed/subscribe/en/news/all/rss.xml', source: 'UN News' },
+  { url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss', source: 'NASA' },
+  { url: 'https://www.who.int/rss-feeds/news-english.xml', source: 'WHO' },
 ]
 
 function extractTag(xml, tag) {
@@ -64,10 +75,22 @@ export default async function handler(req, res) {
 
   try {
     const results = await Promise.allSettled(RSS_FEEDS.map(f => fetchFeed(f)))
-    const all = results.filter(r => r.status === 'fulfilled').flatMap(r => r.value)
+    const buckets = results
+      .filter(r => r.status === 'fulfilled')
+      .map(r => r.value.slice(0, 5))
+      .filter(b => b.length > 0)
+
+    // Interleave: take one article from each source in rotation
+    const interleaved = []
+    const maxLen = Math.max(...buckets.map(b => b.length))
+    for (let i = 0; i < maxLen; i++) {
+      for (const bucket of buckets) {
+        if (bucket[i]) interleaved.push(bucket[i])
+      }
+    }
 
     const seen = new Set()
-    const raw = all.filter(a => {
+    const raw = interleaved.filter(a => {
       if (seen.has(a.title)) return false
       seen.add(a.title)
       return true

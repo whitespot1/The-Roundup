@@ -1,5 +1,23 @@
 import { useState, useEffect, useRef } from 'react'
 
+const ALL_COUNTRIES = [
+  'Afghanistan','Albania','Algeria','Angola','Argentina','Armenia','Australia','Austria','Azerbaijan',
+  'Bahrain','Bangladesh','Belarus','Belgium','Bolivia','Bosnia and Herzegovina','Botswana','Brazil',
+  'Brunei','Bulgaria','Cambodia','Cameroon','Canada','Chile','China','Colombia','Croatia','Cuba',
+  'Cyprus','Czech Republic','Denmark','Ecuador','Egypt','El Salvador','Estonia','Ethiopia',
+  'Finland','France','Georgia','Germany','Ghana','Greece','Guatemala','Hungary','Iceland','India',
+  'Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan',
+  'Kenya','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Libya','Lithuania','Luxembourg',
+  'Malaysia','Mali','Malta','Mauritania','Mauritius','Mexico','Moldova','Mongolia','Montenegro',
+  'Morocco','Mozambique','Myanmar','Namibia','Nepal','Netherlands','New Zealand','Nicaragua',
+  'Nigeria','North Korea','Norway','Oman','Pakistan','Palestine','Panama','Paraguay','Peru',
+  'Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saudi Arabia','Senegal',
+  'Serbia','Singapore','Slovakia','Slovenia','Somalia','South Africa','South Korea','South Sudan',
+  'Spain','Sri Lanka','Sudan','Sweden','Switzerland','Syria','Taiwan','Tanzania','Thailand',
+  'Tunisia','Turkey','Turkmenistan','Uganda','Ukraine','United Arab Emirates','United Kingdom',
+  'United States','Uruguay','Uzbekistan','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'
+]
+
 export default function Home() {
   const [articles, setArticles] = useState([])
   const [status, setStatus] = useState('loading')
@@ -79,7 +97,8 @@ export default function Home() {
     return 0
   }
 
-  const countries = ['all', ...[...new Set(articles.map(a => a.country).filter(c => c && c !== 'Multiple'))].sort()]
+  const articleCountries = articles.map(a => a.country).filter(c => c && c !== 'Multiple' && c !== 'Global')
+  const countries = ['all', ...[...new Set([...ALL_COUNTRIES, ...articleCountries])].sort()]
   const filteredCountries = countries.filter(c => c === 'all' || c.toLowerCase().includes(countrySearch.toLowerCase()))
   const sources = ['all', ...[...new Set(articles.map(a => a.source).filter(Boolean))].sort()]
   const filteredSources = sources.filter(s => s === 'all' || s.toLowerCase().includes(sourceSearch.toLowerCase()))

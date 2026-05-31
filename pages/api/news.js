@@ -19,17 +19,17 @@ export default async function handler(req, res) {
         max_tokens: 12000,
         messages: [{
           role: 'user',
-          content: `Today is ${today}. Generate 50 diverse news stories as a JSON array. Each item must have: headline, summary (2-3 sentences max 60 words), source (one of: Reuters/AP News/BBC/The Guardian/NPR/Financial Times/Nature/WHO/NASA/X), category (one of: Politics/Technology/Science/Business/Health/Sustainability/Supply Chain/Automotive/Social Media/Sport), country (primary country the story is about, full name e.g. "United States"), time (like "2 hours ago").
+          content: `Today is ${today}. Generate 50 diverse news stories as a JSON array. Each item must have: headline, summary (2-3 sentences max 60 words), source (one of: Reuters/AP News/BBC/The Guardian/NPR/Financial Times/Nature/WHO/NASA/X/Bloomberg/The Economist/Wall Street Journal/Al Jazeera/Deutsche Welle/France 24/CNBC/Axios/Politico/Arab News/Saudi Press Agency/UN News/World Bank/IMF), category (one of: Politics/Technology/Science/Business/Health/Sustainability/Supply Chain/Automotive/Social Media/Sport), country (primary country the story is about, full name e.g. "United States"), time (like "2 hours ago").
 
 Category definitions — use the most specific fit:
 - Sustainability: environmental initiatives, green energy, climate policy, eco-friendly practices, carbon emissions, conservation
 - Supply Chain: logistics, trade routes, manufacturing networks, procurement, distribution, supplier disruptions, reshoring, semiconductor supply security
 - Technology: software, AI, consumer electronics, cybersecurity, digital innovation (NOT supply chain resilience stories)
 - Automotive: cars, EVs, auto industry
-- Social Media: use source "X", trending topics on X (Twitter), span Americas/Europe/Middle East/Asia/Africa/Oceania
+- Social Media: use source "X", trending topics on X (Twitter). Must include at least 2 stories about trending topics specifically in Saudi Arabia (viral Saudi content, Saudi hashtags, Saudi celebrities or events trending on X). Span all regions: Americas, Europe, Middle East, Asia, Africa, Oceania.
 - Sport: sports events, athletes, tournaments
 
-Spread stories across many different countries worldwide. Return ONLY the raw JSON array, no markdown, no backticks, no explanation.`
+Spread stories across many different countries worldwide. Give notable focus to Saudi Arabia across categories. Return ONLY the raw JSON array, no markdown, no backticks, no explanation.`
         }]
       })
     })

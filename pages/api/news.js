@@ -119,7 +119,7 @@ Categories (always return these exact English values): Politics, Technology, Sci
 - Sustainability: green energy, climate, conservation, environmental policy
 - Supply Chain: logistics, trade routes, procurement, reshoring, supply security
 - Technology: software, AI, electronics, cybersecurity (NOT supply chain)
-- Social Media: news about social platforms or viral trends
+- Social Media: ONLY for news specifically about X (Twitter) — platform updates, X trending topics, viral X content. Do NOT use for Facebook, TikTok, Instagram, or other platforms. If an article is about X/Twitter, also set its source to "X".
 
 News items:
 ${raw.map((a, i) => `[${i}] TITLE: ${a.title}\nCONTEXT: ${a.summary}`).join('\n\n')}`

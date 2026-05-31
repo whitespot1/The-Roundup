@@ -171,7 +171,7 @@ export default function Home() {
             {tr.langToggle}
           </button>
         </div>
-        <h1 style={{fontFamily: isRTL ? 'Tahoma,Arial,sans-serif' : 'Georgia,serif', fontSize:'2.5rem', fontWeight:900, margin:'0 0 0.2rem', color:t.text}}>The Roundup</h1>
+        <h1 style={{fontFamily:'Georgia,serif', fontSize:'2.5rem', fontWeight:900, margin:'0 0 0.2rem', color:t.text}}>The Roundup</h1>
         <p style={{fontSize:'0.7rem', letterSpacing:'0.2em', color:t.muted, textTransform:'uppercase', margin:'0 0 0.8rem'}}>{tr.subtitle}</p>
 
         {/* Category filter */}

@@ -104,7 +104,7 @@ export default function Home() {
   const filteredSources = sources.filter(s => s === 'all' || s.toLowerCase().includes(sourceSearch.toLowerCase()))
   const shown = articles
     .filter(a => active === 'all' || a.category === active)
-    .filter(a => activeCountry === 'all' || a.country === activeCountry || a.category === 'Social Media')
+    .filter(a => activeCountry === 'all' || a.country === activeCountry)
     .filter(a => activeSource === 'all' || a.source === activeSource)
     .sort((a, b) => sortOrder === 'newest' ? parseTime(a.time) - parseTime(b.time) : parseTime(b.time) - parseTime(a.time))
 

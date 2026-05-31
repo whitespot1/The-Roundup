@@ -7,8 +7,13 @@ export default function Home() {
   const [activeCountry, setActiveCountry] = useState('all')
   const [countryOpen, setCountryOpen] = useState(false)
   const [countrySearch, setCountrySearch] = useState('')
+  const [activeSource, setActiveSource] = useState('all')
+  const [sourceOpen, setSourceOpen] = useState(false)
+  const [sourceSearch, setSourceSearch] = useState('')
+  const [sortOrder, setSortOrder] = useState('newest')
   const [dark, setDark] = useState(true)
   const countryRef = useRef(null)
+  const sourceRef = useRef(null)
   const cats = ['all','Politics','Technology','Science','Business','Health','Sustainability','Supply Chain','Automotive','Social Media','Sport']
 
   const t = dark ? {
@@ -33,6 +38,10 @@ export default function Home() {
         setCountryOpen(false)
         setCountrySearch('')
       }
+      if (sourceRef.current && !sourceRef.current.contains(e.target)) {
+        setSourceOpen(false)
+        setSourceSearch('')
+      }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -50,6 +59,7 @@ export default function Home() {
     setStatus('loading')
     setArticles([])
     setActiveCountry('all')
+    setActiveSource('all')
     try {
       const res = await fetch('/api/news')
       const data = await res.json()
@@ -58,11 +68,26 @@ export default function Home() {
     } catch(e) { setStatus('error') }
   }
 
+  function parseTime(str) {
+    const m = (str || '').match(/(\d+)\s+(minute|hour|day|week)/)
+    if (!m) return 0
+    const n = parseInt(m[1])
+    if (m[2] === 'minute') return n
+    if (m[2] === 'hour') return n * 60
+    if (m[2] === 'day') return n * 1440
+    if (m[2] === 'week') return n * 10080
+    return 0
+  }
+
   const countries = ['all', ...[...new Set(articles.map(a => a.country).filter(c => c && c !== 'Multiple'))].sort()]
   const filteredCountries = countries.filter(c => c === 'all' || c.toLowerCase().includes(countrySearch.toLowerCase()))
+  const sources = ['all', ...[...new Set(articles.map(a => a.source).filter(Boolean))].sort()]
+  const filteredSources = sources.filter(s => s === 'all' || s.toLowerCase().includes(sourceSearch.toLowerCase()))
   const shown = articles
     .filter(a => active === 'all' || a.category === active)
     .filter(a => activeCountry === 'all' || a.country === activeCountry || a.category === 'Social Media')
+    .filter(a => activeSource === 'all' || a.source === activeSource)
+    .sort((a, b) => sortOrder === 'newest' ? parseTime(a.time) - parseTime(b.time) : parseTime(b.time) - parseTime(a.time))
 
   return (
     <div style={{fontFamily:'Georgia,serif',background:t.bg,minHeight:'100vh',color:t.text,transition:'all 0.3s'}}>
@@ -70,7 +95,7 @@ export default function Home() {
       {/* HEADER */}
       <div style={{textAlign:'center',padding:'1.5rem 1rem',borderBottom:`3px double ${t.border}`,position:'sticky',top:0,background:t.bg,zIndex:99,transition:'all 0.3s'}}>
         <div style={{display:'flex',justifyContent:'flex-end',marginBottom:'0.5rem'}}>
-          <button onClick={() => setDark(!dark)} style={{background:'none',border:`1px solid ${t.border}`,color:t.text,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer'}}>
+          <button onClick={() => setDark(!dark)} style={{background:'none',border:`1px solid ${t.border}`,color:t.text,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer',minWidth:'5.5rem',textAlign:'center'}}>
             {dark ? '☀ Light' : '☾ Dark'}
           </button>
         </div>
@@ -84,13 +109,15 @@ export default function Home() {
             </button>
           ))}
         </div>
-        {countries.length > 1 && (
-          <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'0.5rem',borderTop:`1px solid ${t.border}`,paddingTop:'0.4rem',marginBottom:'0.6rem'}}>
+        {articles.length > 0 && (
+          <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',alignItems:'center',gap:'0.5rem',borderTop:`1px solid ${t.border}`,paddingTop:'0.4rem',marginBottom:'0.6rem'}}>
+
+            {/* Country */}
             <span style={{color:t.muted,fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase'}}>Country:</span>
             <div ref={countryRef} style={{position:'relative'}}>
               <button onClick={() => setCountryOpen(!countryOpen)}
                 style={{background:activeCountry!=='all'?t.btn:'transparent',color:activeCountry!=='all'?t.btnText:t.muted,border:`1px solid ${t.border}`,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',cursor:'pointer',display:'flex',alignItems:'center',gap:'0.4rem'}}>
-                {activeCountry === 'all' ? 'All Countries' : activeCountry} <span style={{fontSize:'0.5rem'}}>▾</span>
+                {activeCountry === 'all' ? 'All Countries & Global' : activeCountry} <span style={{fontSize:'0.5rem'}}>▾</span>
               </button>
               {countryOpen && (
                 <div style={{position:'absolute',top:'calc(100% + 2px)',left:0,background:t.card,border:`1px solid ${t.border}`,zIndex:200,minWidth:'220px',boxShadow:'0 4px 12px rgba(0,0,0,0.4)'}}>
@@ -101,7 +128,7 @@ export default function Home() {
                     {filteredCountries.map(c => (
                       <div key={c} onClick={() => { setActiveCountry(c); setCountryOpen(false); setCountrySearch('') }}
                         style={{padding:'0.4rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer',background:activeCountry===c?t.btn:'transparent',color:activeCountry===c?t.btnText:t.text}}>
-                        {c === 'all' ? 'All Countries' : c}
+                        {c === 'all' ? 'All Countries & Global' : c}
                       </div>
                     ))}
                     {filteredCountries.length === 0 && <div style={{padding:'0.4rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',color:t.muted}}>No results</div>}
@@ -109,6 +136,38 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            {/* Source */}
+            <span style={{color:t.muted,fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',marginLeft:'0.5rem'}}>Source:</span>
+            <div ref={sourceRef} style={{position:'relative'}}>
+              <button onClick={() => setSourceOpen(!sourceOpen)}
+                style={{background:activeSource!=='all'?t.btn:'transparent',color:activeSource!=='all'?t.btnText:t.muted,border:`1px solid ${t.border}`,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',cursor:'pointer',display:'flex',alignItems:'center',gap:'0.4rem'}}>
+                {activeSource === 'all' ? 'All Sources' : activeSource} <span style={{fontSize:'0.5rem'}}>▾</span>
+              </button>
+              {sourceOpen && (
+                <div style={{position:'absolute',top:'calc(100% + 2px)',left:0,background:t.card,border:`1px solid ${t.border}`,zIndex:200,minWidth:'200px',boxShadow:'0 4px 12px rgba(0,0,0,0.4)'}}>
+                  <input autoFocus value={sourceSearch} onChange={e => setSourceSearch(e.target.value)}
+                    placeholder="Search source..."
+                    style={{width:'100%',background:t.bg,color:t.text,border:'none',borderBottom:`1px solid ${t.border}`,padding:'0.45rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',outline:'none',boxSizing:'border-box'}} />
+                  <div style={{maxHeight:'200px',overflowY:'auto'}}>
+                    {filteredSources.map(s => (
+                      <div key={s} onClick={() => { setActiveSource(s); setSourceOpen(false); setSourceSearch('') }}
+                        style={{padding:'0.4rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',textTransform:'uppercase',cursor:'pointer',background:activeSource===s?t.btn:'transparent',color:activeSource===s?t.btnText:t.text}}>
+                        {s === 'all' ? 'All Sources' : s}
+                      </div>
+                    ))}
+                    {filteredSources.length === 0 && <div style={{padding:'0.4rem 0.6rem',fontFamily:'monospace',fontSize:'0.65rem',color:t.muted}}>No results</div>}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sort */}
+            <button onClick={() => setSortOrder(o => o === 'newest' ? 'oldest' : 'newest')}
+              style={{background:'transparent',color:t.muted,border:`1px solid ${t.border}`,padding:'0.3rem 0.8rem',fontFamily:'monospace',fontSize:'0.6rem',textTransform:'uppercase',cursor:'pointer',marginLeft:'0.5rem'}}>
+              {sortOrder === 'newest' ? '↓ Newest' : '↑ Oldest'}
+            </button>
+
           </div>
         )}
         <button onClick={loadNews} disabled={status==='loading'}

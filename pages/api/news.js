@@ -96,7 +96,7 @@ export default async function handler(req, res) {
       if (seen.has(a.title)) return false
       seen.add(a.title)
       return true
-    }).slice(0, 60)
+    }).slice(0, 100)
 
     if (raw.length === 0) return res.status(500).json({ error: 'No articles fetched' })
 
@@ -108,18 +108,26 @@ export default async function handler(req, res) {
         max_tokens: 10000,
         messages: [{
           role: 'user',
-          content: `For each news item below, ${isArabic
+          content: `You have ${raw.length} news items below. Select the best 50 and for each: ${isArabic
             ? 'translate the headline to Arabic and write a clean 2-3 sentence summary IN ARABIC (max 60 words),'
             : 'write a clean 2-3 sentence summary (max 60 words),'
           } assign a category, and identify the primary country.
 
-Return ONLY a JSON array: [{"idx":0,${isArabic ? '"headline":"العنوان بالعربية",' : ''}"summary":"...","category":"...","country":"Full English Country Name"},...]
+CRITICAL DISTRIBUTION RULE: The 10 categories below must each appear AT LEAST 5 times in your 50 selected items (≥10% each). If a category is under-represented among natural fits, re-assign the most borderline articles to fill it. Every category must reach 5.
 
-Categories (always return these exact English values): Politics, Technology, Science, Business, Health, Sustainability, Supply Chain, Automotive, Social Media, Sport
+Return ONLY a JSON array of exactly 50 items: [{"idx":0,${isArabic ? '"headline":"العنوان بالعربية",' : ''}"summary":"...","category":"...","country":"Full English Country Name"},...]
+
+Categories (always return these exact English values):
+- Politics: government, elections, diplomacy, international relations
+- Technology: software, AI, electronics, cybersecurity (NOT supply chain)
+- Science: research, discoveries, space, medicine breakthroughs
+- Business: markets, economy, companies, finance, trade
+- Health: public health, diseases, medical policy, WHO updates
 - Sustainability: green energy, climate, conservation, environmental policy
 - Supply Chain: logistics, trade routes, procurement, reshoring, supply security
-- Technology: software, AI, electronics, cybersecurity (NOT supply chain)
-- Social Media: ONLY for news specifically about X (Twitter) — platform updates, X trending topics, viral X content. Do NOT use for Facebook, TikTok, Instagram, or other platforms. If an article is about X/Twitter, also set its source to "X".
+- Automotive: cars, EVs, auto industry, transportation
+- Social Media: ONLY news specifically about X (Twitter) — trending topics, platform updates, viral X content. Set source to "X" for these.
+- Sport: sports events, athletes, tournaments, leagues
 
 News items:
 ${raw.map((a, i) => `[${i}] TITLE: ${a.title}\nCONTEXT: ${a.summary}`).join('\n\n')}`
